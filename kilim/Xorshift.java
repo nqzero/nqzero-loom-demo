@@ -30,11 +30,19 @@ public class Xorshift extends kilim.Continuation {
 
     long result;
 
+    void warmup(long num) {
+        long warmup = 5000000000L;
+        final long start = System.nanoTime();
+        long dummy = 0;
+        while (System.nanoTime() - start < warmup)
+            dummy = dummy ^ loop(num);
+        System.out.println("warmup: " + dummy);
+    }
     void cycle(long num) {
         final long start = System.nanoTime();
         long val = loop(num);
         long duration = System.nanoTime() - start;
-        System.out.format("%-10.2f nanos/op, %30d\n", 1.0*duration/num, val);
+        System.out.format("kilim: %-10.2f nanos/op, %30d\n", 1.0*duration/num, val);
     }
     public long loop(long num) {
         long val = 0;
@@ -59,7 +67,7 @@ public class Xorshift extends kilim.Continuation {
 
     public static void main(String[] args) {
         if (kilim.tools.Kilim.trampoline(true,args)) return;
-        long cycles = 5000000;
+        long cycles = 200000;
         int reps = 10;
         if (args.length == 0) {
             System.out.println("args: number of cycles, number of repeats");
@@ -68,6 +76,7 @@ public class Xorshift extends kilim.Continuation {
         try { cycles = Long.parseLong(args[0]); } catch (Exception ex) {}
         try { reps = Integer.parseInt(args[1]); } catch (Exception ex) {}
 
+        new Xorshift().warmup(cycles);
         Xorshift xor = new Xorshift();
         
         for (int jj=0; jj < reps; jj++)

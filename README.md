@@ -25,12 +25,26 @@ however, loom is much more ambitious than kilim in terms of what code can yield,
 
 # Running
 
-loom:
-`$loom/bin/java Xorshift.java 100000 10`
+by default `Xorshift` does a 5 second warmup and then 10 reps of 200000 rotations
+
+- `$loom/bin/java Xorshift.java`
+- `mvn -f kilim/pom.xml compile exec:java -Dexec.mainClass=Xorshift clean`
 
 
-kilim:
-`mvn -f kilim/pom.xml compile exec:java -Dexec.mainClass=Xorshift clean`
+results:
+```
+kilim: 32.21      nanos/op,           -1379446094540640482
+kilim: 30.10      nanos/op,            5204491086981418152
+kilim: 29.82      nanos/op,            8246585696269541781
+kilim: 29.85      nanos/op,           -6223228706767765329
+kilim: 30.45      nanos/op,            6319753122833807335
 
+loom : 17683.30   nanos/op,           -1379446094540640482
+loom : 17591.34   nanos/op,            5204491086981418152
+loom : 17531.60   nanos/op,            8246585696269541781
+loom : 17894.27   nanos/op,           -6223228706767765329
+loom : 17533.77   nanos/op,            6319753122833807335
+
+```
 
 
