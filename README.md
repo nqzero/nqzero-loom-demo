@@ -26,5 +26,11 @@ if so, it might make sense to use the Project Loom Continuations in kilim instea
 however, loom is much more ambitious than kilim in terms of what code can yield, and as a result performance may be fundamentally limited
 
 
+# Running
+
+`$loom/bin/java Xorshift.java 100000 10`
+
+
+
 
 
