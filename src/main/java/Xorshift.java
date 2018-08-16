@@ -20,33 +20,25 @@ public class Xorshift {
         long cycles = 5000000;
         int reps = 10;
         if (args.length == 0) {
-            System.out.println("args: number of cycles, number of repeats, 'gen' for Generator");
-            System.out.format("\t no args provided using defaults: %d %d pure\n",cycles,reps);
+            System.out.println("args: number of cycles, number of repeats");
+            System.out.format("\t no args provided using defaults: %d %d\n",cycles,reps);
         }
         try { cycles = Long.parseLong(args[0]); } catch (Exception ex) {}
         try { reps = Integer.parseInt(args[1]); } catch (Exception ex) {}
-        boolean pure = true;
-        int dual = 1;
-        if (args.length > 2 && args[2].equals("gen")) pure = false;
-        if (args.length > 2 && args[2].equals("dual")) dual = 10;
 
-        for (int kk=0; kk < dual; kk++, pure=!pure) {
-            Loop primes = new X2();
+        X2 primes = new X2();
 
-            for (int jj=0; jj < reps; jj++)
-                cycle(primes,cycles);
-        }
+        for (int jj=0; jj < reps; jj++)
+            cycle(primes,cycles);
     }
-    static void cycle(Loop looper,long num) {
+    static void cycle(X2 looper,long num) {
         final long start = System.nanoTime();
         long val = looper.loop(num);
         long duration = System.nanoTime() - start;
         System.out.format("%-10.2f nanos/op, %30d %s\n", 1.0*duration/num, val, looper.getClass().getSimpleName());
     }
 
-    interface Loop { long loop(long num); }
-
-    public static class X2 implements Loop {
+    public static class X2 {
         Continuation ctu = new Continuation(SCOPE,this::execute);
         long result;
         public void execute() {
