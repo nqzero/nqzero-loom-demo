@@ -20,14 +20,14 @@
 
 
 /**
- *  a demo and benchmark of Project Loom continuations used to implement the xorshift PRNG
+ *  a demo and benchmark of kilim continuations used to implement the xorshift PRNG
  *  runs xorshift a number of cycles, printing the nanos per cycle and the xor of the result
  *  the value is printed just to ensure that the JIT actually runs all the code
  *  https://en.wikipedia.org/wiki/Xorshift#xorshift.2B
  */
-public class Xorshift {
-    static final ContinuationScope SCOPE = new ContinuationScope() {};
-    Continuation ctu = new Continuation(SCOPE,this::execute);
+public class Xorshift extends kilim.Continuation {
+
+
     long result;
 
     void cycle(long num) {
@@ -39,12 +39,12 @@ public class Xorshift {
     public long loop(long num) {
         long val = 0;
         for (int ii=0; ii < num; ii++) {
-            ctu.run();
+            run();
             val = val ^ result;
         }
         return val;
     }
-    public void execute() {
+    public void execute() throws kilim.Pausable {
         long x, y, s0=103, s1=17;
         while (true) {
             x = s0;
@@ -53,12 +53,12 @@ public class Xorshift {
             x ^= (x << 23);
             s1 = x ^ y ^ (x >> 17) ^ (y >> 26);
             result = (s1 + y);
-            Continuation.yield(SCOPE);
+            kilim.Fiber.yield();
         }
     }
 
     public static void main(String[] args) {
-
+        if (kilim.tools.Kilim.trampoline(true,args)) return;
         long cycles = 5000000;
         int reps = 10;
         if (args.length == 0) {
