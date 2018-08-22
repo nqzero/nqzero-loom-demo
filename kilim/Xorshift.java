@@ -66,7 +66,7 @@ public class Xorshift extends kilim.Continuation {
     }
 
     public static void main(String[] args) {
-        if (kilim.tools.Kilim.trampoline(true,args)) return;
+        if (kilim.tools.Kilim.trampoline(false,args)) return;
         long cycles = 200000;
         int reps = 10;
         if (args.length == 0) {
