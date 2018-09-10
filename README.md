@@ -59,3 +59,16 @@ kilim: 30.45      nanos/op,            6319753122833807335
 ```
 
 
+
+# command line flags
+
+loom can disable certain checks, which results in faster but potentially unsafe code. try:
+
+```
+loomflags="-XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -XX:+UseNewCode -XX:-DetectLocksInCompiledFrames"
+$loom/bin/java $loomflags Xorshift.java
+```
+
+
+
+
