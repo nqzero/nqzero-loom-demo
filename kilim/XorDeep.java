@@ -1,5 +1,11 @@
-public class Xorshift {
-    static final ContinuationScope SCOPE = new ContinuationScope() {};
+
+import kilim.Fiber;
+import kilim.Pausable;
+
+
+
+
+public class XorDeep {
     Continuation ctus[];
     long result;
     int depth;
@@ -9,16 +15,16 @@ public class Xorshift {
     long times;
 
     void average() {
-        System.out.format("==== loom average : %-10.2f nanos/op%n", sum/times); 
+        System.out.format("==== kilim average : %-10.2f nanos/op%n", sum/times); 
     }
  
-    Xorshift(int depth, int ctuNum, boolean debug) {
+    XorDeep(int depth, int ctuNum, boolean debug) {
         this.depth = depth;
         this.ctuNum = ctuNum;
         this.debug = debug;
         ctus = new Continuation[ctuNum];
         for (int i = 0; i < ctuNum; i++) {
-            ctus[i] = new Continuation(SCOPE, this::recursiveCall);
+            ctus[i] = new Continuation();
         }
     }
 
@@ -48,18 +54,19 @@ public class Xorshift {
         return val;
     }
 
-    void recursiveCall() {
+    class Continuation extends kilim.Continuation {
+    public void execute() throws Pausable {
         //System.out.println("initial d: " + depth);
         recursiveCall(depth); 
     }
-    void recursiveCall(int d) {
+    void recursiveCall(int d) throws Pausable {
         //System.out.println("d: " + d);
         while(d > 0) {
             recursiveCall(--d);
         }
-        execute();
+        execute2();
     }
-    public void execute() {
+    public void execute2() throws Pausable {
         if (debug) {
             new Throwable().printStackTrace();
         }
@@ -71,11 +78,12 @@ public class Xorshift {
             x ^= (x << 23);
             s1 = x ^ y ^ (x >> 17) ^ (y >> 26);
             result = (s1 + y);
-            Continuation.yield(SCOPE);
+            Fiber.yield();
         }
     }
-
+    }
     public static void main(String[] args) {
+        if (kilim.tools.Kilim.trampoline(false,args)) return;
 
         long cycles = 200000;
         int reps = 10;
@@ -96,8 +104,8 @@ public class Xorshift {
             System.out.format("\t cycle: %d, reps: %d, depth: %d, ctuNum: %d, debug: %b\n",cycles, reps, depth, ctuNum, debug);
         }
 
-        new Xorshift(depth, ctuNum, debug).warmup(cycles);
-        Xorshift xor = new Xorshift(depth, ctuNum, debug);
+        new XorDeep(depth, ctuNum, debug).warmup(cycles);
+        XorDeep xor = new XorDeep(depth, ctuNum, debug);
         
         for (int jj=0; jj < reps; jj++) {
             //Xorshift xor = new Xorshift(depth, ctuNum, debug);
