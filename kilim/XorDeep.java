@@ -83,7 +83,7 @@ public class XorDeep {
     }
     }
     public static void main(String[] args) {
-        if (kilim.tools.Kilim.trampoline(false,args)) return;
+        if (kilim.tools.Kilim.trampoline(new Object() {},false,args)) return;
 
         long cycles = 200000;
         int reps = 10;
